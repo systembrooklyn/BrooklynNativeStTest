@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎓 Student Profile Viewer</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card {
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      background-color: #007bff;
+      color: white;
+      padding: 0.5rem;
+      font-weight: bold;
+    }
+    .data-label {
+      font-weight: 600;
+    }
+    .payment-card, .score-card {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .no-data {
+      font-style: italic;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-4">
+  <h2 class="mb-4 text-center">🔍 Student Profile Viewer</h2>
+
+  <div class="input-group mb-3">
+    <input type="text" id="studentNumber" class="form-control" placeholder="Enter Student Number (e.g., 2811111880712)">
+    <button class="btn btn-primary" onclick="fetchStudent()">Search</button>
+  </div>
+
+  <div id="loading" class="alert alert-info d-none" role="alert">
+    Loading data...
+  </div>
+  <div id="error" class="alert alert-danger d-none" role="alert"></div>
+
+  <div id="studentData" class="d-none">
+    <!-- Personal Info -->
+    <div class="card">
+      <div class="section-title">👤 Personal Information</div>
+      <div class="card-body">
+        <p><span class="data-label">Name:</span> <span id="name"></span></p>
+        <p><span class="data-label">Student ID:</span> <span id="ID_number"></span></p>
+        <p><span class="data-label">Birth Date:</span> <span id="birth_date"></span></p>
+        <p><span class="data-label">Grade:</span> <span id="grade"></span></p>
+        <p><span class="data-label">Scholar Status:</span> <span id="scholar_status"></span></p>
+        <p><span class="data-label">Company:</span> <span id="company"></span></p>
+        <p><span class="data-label">Marketing Code:</span> <span id="marketing_code"></span></p>
+      </div>
+    </div>
+
+    <!-- Contacts -->
+    <div class="card">
+      <div class="section-title">📞 Contacts</div>
+      <div class="card-body">
+        <ul id="phones"></ul>
+      </div>
+    </div>
+
+    <!-- Scholarship -->
+    <div class="card">
+      <div class="section-title">🎓 Scholarship</div>
+      <div class="card-body">
+        <p><span class="data-label">Name:</span> <span id="scholarship_name"></span></p>
+        <h6>Courses:</h6>
+        <ul id="scholarship_courses"></ul>
+      </div>
+    </div>
+
+    <!-- Course Scores -->
+    <div class="card">
+      <div class="section-title">📚 Course Scores</div>
+      <div class="card-body">
+        <div id="courses"></div>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div class="card">
+      <div class="section-title">📅 Groups</div>
+      <div class="card-body">
+        <ul id="groups"></ul>
+      </div>
+    </div>
+
+    <!-- Attendance -->
+    <div class="card">
+      <div class="section-title">✅ Attendance</div>
+      <div class="card-body">
+        <p><span class="data-label">Total Lectures:</span> <span id="total_supposed"></span></p>
+        <p><span class="data-label">Attended:</span> <span id="total_attendance"></span></p>
+      </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="card">
+      <div class="section-title">💳 Payments</div>
+      <div class="card-body">
+        <div id="payments"></div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="card">
+      <div class="section-title">📄 Documents</div>
+      <div class="card-body">
+        <div id="documents" class="no-data">No documents found.</div>
+      </div>
+    </div>
+
+    <!-- Requests -->
+    <div class="card">
+      <div class="section-title">📬 Requests</div>
+      <div class="card-body">
+        <div id="requests" class="no-data">No requests found.</div>
+      </div>
+    </div>
+
+    <!-- Reservations -->
+    <div class="card">
+      <div class="section-title">📅 Reservations</div>
+      <div class="card-body">
+        <div id="reservations" class="no-data">No reservations found.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fetchStudent() {
+    const studentNumber = document.getElementById('studentNumber').value.trim();
+    const studentData = document.getElementById('studentData');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+
+    if (!studentNumber) {
+      alert('Please enter a student number.');
+      return;
+    }
+
+    studentData.classList.add('d-none');
+    loading.classList.remove('d-none');
+    error.classList.add('d-none');
+
+    fetch(`https://shark-app-s8ndy.ondigitalocean.app/api/student/${studentNumber}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Student not found');
+        }
+        return response.json();
+      })
+      .then(data => {
+        loading.classList.add('d-none');
+
+        // Personal Info
+        document.getElementById('name').textContent = data.name || 'N/A';
+        document.getElementById('ID_number').textContent = data.ID_number || 'N/A';
+        document.getElementById('birth_date').textContent = data.birth_date || 'N/A';
+        document.getElementById('grade').textContent = data.grade || 'N/A';
+        document.getElementById('scholar_status').textContent = data.scholar_status || 'N/A';
+        document.getElementById('company').textContent = data.company || 'N/A';
+        document.getElementById('marketing_code').textContent = data.marketing_code || 'N/A';
+
+        // Phones
+        const phonesList = document.getElementById('phones');
+        phonesList.innerHTML = '';
+        if (data.phones && data.phones.length > 0) {
+          data.phones.forEach(phone => {
+            const li = document.createElement('li');
+            li.textContent = phone.phone;
+            phonesList.appendChild(li);
+          });
+        } else {
+          phonesList.innerHTML = '<li>No phone numbers found</li>';
+        }
+
+        // Scholarship
+        document.getElementById('scholarship_name').textContent = data.scholarship?.name || 'N/A';
+        const coursesList = document.getElementById('scholarship_courses');
+        coursesList.innerHTML = '';
+        if (data.scholarship?.courses && data.scholarship.courses.length > 0) {
+          data.scholarship.courses.forEach(course => {
+            const li = document.createElement('li');
+            li.textContent = `${course.name} (${course.code})`;
+            coursesList.appendChild(li);
+          });
+        } else {
+          coursesList.innerHTML = '<li>No courses found</li>';
+        }
+
+        // Course Scores
+        const courseScoresContainer = document.getElementById('courses');
+        courseScoresContainer.innerHTML = '';
+        if (data.courses && data.courses.length > 0) {
+          data.courses.forEach(course => {
+            const card = document.createElement('div');
+            card.className = 'score-card';
+            card.innerHTML = `
+              <p class="mb-1"><strong>Course:</strong> ${course.name} (${course.code})</p>
+              <p class="mb-0"><strong>Final Score:</strong> ${course.pivot.final_score || 'N/A'}%</p>
+            `;
+            courseScoresContainer.appendChild(card);
+          });
+        } else {
+          courseScoresContainer.innerHTML = '<p class="no-data">No scores available.</p>';
+        }
+
+        // Groups
+        const groupsList = document.getElementById('groups');
+        groupsList.innerHTML = '';
+        if (data.groups && data.groups.length > 0) {
+          data.groups.forEach(group => {
+            const li = document.createElement('li');
+            li.textContent = `${group.name} (Total Lectures: ${group.total_lec})`;
+            groupsList.appendChild(li);
+          });
+        } else {
+          groupsList.innerHTML = '<li>No groups found</li>';
+        }
+
+        // Attendance
+        document.getElementById('total_supposed').textContent = data.total_supposed || 0;
+        document.getElementById('total_attendance').textContent = data.total_attendance || 0;
+
+        // Payments
+        const paymentsContainer = document.getElementById('payments');
+        paymentsContainer.innerHTML = '';
+        if (data.payments && data.payments.length > 0) {
+          data.payments.forEach(payment => {
+            const card = document.createElement('div');
+            card.className = 'payment-card';
+            card.innerHTML = `
+              <p class="mb-1"><strong>ID:</strong> ${payment.id || 'N/A'}</p>
+              <p class="mb-1"><strong>Status:</strong> ${payment.status || 'N/A'}</p>
+              <p class="mb-1"><strong>Total Payment:</strong> ${payment.total_payment || 'N/A'}</p>
+              <p class="mb-1"><strong>Due Date:</strong> ${payment.due_date || 'N/A'}</p>
+              <p class="mb-1"><strong>Paid Date:</strong> ${payment.paid_date || 'N/A'}</p>
+              <p class="mb-1"><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
+              <p class="mb-1"><strong>Paid Amount:</strong> ${formatCurrency(payment.paid_amount)}</p>
+              <p class="mb-1"><strong>Serial:</strong> ${payment.serial || 'N/A'}</p>
+              <p class="mb-0"><small><strong>Created:</strong> ${formatDate(payment.created_at)}</small></p>
+            `;
+            paymentsContainer.appendChild(card);
+          });
+        } else {
+          paymentsContainer.innerHTML = '<p class="no-data">No payments found.</p>';
+        }
+
+        // Documents
+        const documents = document.getElementById('documents');
+        if (data.documents) {
+          documents.innerHTML = `
+            <p>Front ID: ${data.documents.front_id || 'N/A'}</p>
+            <p>Back ID: ${data.documents.back_id || 'N/A'}</p>
+          `;
+        } else {
+          documents.innerHTML = 'No documents found.';
+        }
+
+        // Requests
+        const requests = document.getElementById('requests');
+        if (data.requests && data.requests.length > 0) {
+          requests.innerHTML = '';
+          data.requests.forEach(req => {
+            const div = document.createElement('div');
+            div.textContent = `${req.type}: ${req.value} (${req.status})`;
+            requests.appendChild(div);
+          });
+        } else {
+          requests.innerHTML = 'No requests found.';
+        }
+
+        // Reservations
+        const reservations = document.getElementById('reservations');
+        if (data.reservations && data.reservations.length > 0) {
+          reservations.innerHTML = '';
+          data.reservations.forEach(res => {
+            const div = document.createElement('div');
+            div.textContent = `Status: ${res.status}, Branch: ${res.branch_id}`;
+            reservations.appendChild(div);
+          });
+        } else {
+          reservations.innerHTML = 'No reservations found.';
+        }
+
+        studentData.classList.remove('d-none');
+      })
+      .catch(err => {
+        loading.classList.add('d-none');
+        error.textContent = err.message;
+        error.classList.remove('d-none');
+      });
+  }
+
+  function formatDate(dateStr) {
+    try {
+      return new Date(dateStr).toLocaleString();
+    } catch {
+      return 'Invalid Date';
+    }
+  }
+
+  function formatCurrency(amount) {
+    try {
+      return parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    } catch {
+      return amount;
+    }
+  }
+</script>
+
+</body>
+</html>
