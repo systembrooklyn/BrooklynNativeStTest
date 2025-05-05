@@ -55,6 +55,7 @@
       <div class="section-title">👤 Personal Information</div>
       <div class="card-body">
         <p><span class="data-label">Name:</span> <span id="name"></span></p>
+        <p><span class="data-label">Student Email:</span> <span id="email"></span></p>
         <p><span class="data-label">Student ID:</span> <span id="ID_number"></span></p>
         <p><span class="data-label">Birth Date:</span> <span id="birth_date"></span></p>
         <p><span class="data-label">Grade:</span> <span id="grade"></span></p>
@@ -170,6 +171,7 @@
         // Personal Info
         document.getElementById('name').textContent = data.name || 'N/A';
         document.getElementById('ID_number').textContent = data.ID_number || 'N/A';
+        document.getElementById('email').textContent = data.student_user?.email || 'N/A';
         document.getElementById('birth_date').textContent = data.birth_date || 'N/A';
         document.getElementById('grade').textContent = data.grade || 'N/A';
         document.getElementById('scholar_status').textContent = data.scholar_status || 'N/A';
