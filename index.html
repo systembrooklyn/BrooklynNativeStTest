@@ -102,7 +102,7 @@
         </div>
 
         <!-- Scholarship -->
-        <div class="card">
+        <!-- <div class="card">
           <div class="section-title">🎓 Scholarship</div>
           <div class="card-body">
             <p>
@@ -112,7 +112,7 @@
             <h6>Courses:</h6>
             <ul id="scholarship_courses"></ul>
           </div>
-        </div>
+        </div> -->
 
         <!-- Course Scores -->
         <div class="card">
@@ -244,23 +244,23 @@
               phonesList.innerHTML = "<li>No phone numbers found</li>";
             }
 
-            // Scholarship
-            document.getElementById("scholarship_name").textContent =
-              data.scholarship?.name || "N/A";
-            const coursesList = document.getElementById("scholarship_courses");
-            coursesList.innerHTML = "";
-            if (
-              data.scholarship?.courses &&
-              data.scholarship.courses.length > 0
-            ) {
-              data.scholarship.courses.forEach((course) => {
-                const li = document.createElement("li");
-                li.textContent = `${course.name} (${course.code})`;
-                coursesList.appendChild(li);
-              });
-            } else {
-              coursesList.innerHTML = "<li>No courses found</li>";
-            }
+            // // Scholarship
+            // document.getElementById("scholarship_name").textContent =
+            //   data.scholarship?.name || "N/A";
+            // const coursesList = document.getElementById("scholarship_courses");
+            // coursesList.innerHTML = "";
+            // if (
+            //   data.scholarship?.courses &&
+            //   data.scholarship.courses.length > 0
+            // ) {
+            //   data.scholarship.courses.forEach((course) => {
+            //     const li = document.createElement("li");
+            //     li.textContent = `${course.name} (${course.code})`;
+            //     coursesList.appendChild(li);
+            //   });
+            // } else {
+            //   coursesList.innerHTML = "<li>No courses found</li>";
+            // }
 
             // Course Scores
             const courseScoresContainer = document.getElementById("courses");
@@ -290,7 +290,9 @@
             if (data.groups && data.groups.length > 0) {
               data.groups.forEach((group) => {
                 const li = document.createElement("li");
-                li.textContent = `${group.name} (Total Lectures: ${group.total_lec}, Start: ${formatDate(group.pivot.starts_at)})`;
+                li.textContent = `${group.name} (Total Lectures: ${
+                  group.total_lec
+                }, Start: ${formatDate(group.pivot.starts_at)})`;
                 groupsList.appendChild(li);
               });
             } else {
@@ -424,12 +426,19 @@
         try {
           return parseFloat(amount).toLocaleString("en-US", {
             style: "currency",
-            currency: "USD",
+            currency: "EGP",
           });
         } catch {
           return amount;
         }
       }
+      document
+        .getElementById("studentNumber")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            fetchStudent();
+          }
+        });
     </script>
   </body>
 </html>
